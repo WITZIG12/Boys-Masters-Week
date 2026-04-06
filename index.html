@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Boys Masters Week</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --green-deep: #1a4a26;
+      --green-mid: #2e6b3e;
+      --gold: #c9a84c;
+      --gold-light: #f5e9c8;
+      --cream: #faf8f3;
+      --text-dark: #1c1c1a;
+      --text-mid: #4a4a44;
+      --text-soft: #888880;
+      --border: rgba(0,0,0,0.1);
+      --radius: 12px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text-dark);
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--green-deep);
+      padding: 2rem 1rem 1.5rem;
+      text-align: center;
+      border-bottom: 3px solid var(--gold);
+    }
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(22px, 5vw, 34px);
+      color: #fff;
+      letter-spacing: 0.02em;
+      margin-bottom: 4px;
+    }
+
+    header p {
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 300;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-soft);
+      font-weight: 500;
+      margin-bottom: 14px;
+    }
+
+    .player-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--cream);
+      color: var(--text-dark);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    input[type="text"]:focus { border-color: var(--green-mid); }
+    input[type="text"]::placeholder { color: var(--text-soft); }
+
+    .btn-remove {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: none;
+      color: var(--text-soft);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-remove:hover { background: #f5f5f0; }
+
+    .btn-add {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      padding: 9px 14px;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      background: none;
+      color: var(--text-soft);
+      cursor: pointer;
+      width: 100%;
+      margin-top: 4px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .btn-add:hover { background: var(--cream); color: var(--text-mid); }
+
+    .btn-primary {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      padding: 14px;
+      background: var(--green-deep);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      width: 100%;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      transition: background 0.15s;
+    }
+    .btn-primary:hover { background: var(--green-mid); }
+    .btn-primary:disabled {
+      background: #e0e0d8;
+      color: var(--text-soft);
+      cursor: default;
+    }
+
+    .btn-secondary {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      padding: 11px;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: 100%;
+      cursor: pointer;
+      color: var(--text-mid);
+      transition: background 0.15s;
+      margin-top: 10px;
+    }
+    .btn-secondary:hover { background: #f5f5f0; }
+
+    #game-area { display: none; }
+
+    .player-turn {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      color: var(--green-deep);
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      border-radius: 8px;
+      background: #b8dda8;
+    }
+
+    .dist-display {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 8px;
+      margin: 14px 0 16px;
+    }
+    .dist-big {
+      font-family: 'Playfair Display', serif;
+      font-size: 44px;
+      color: var(--green-deep);
+      line-height: 1;
+      min-width: 80px;
+      text-align: right;
+    }
+    .dist-unit { font-size: 14px; color: var(--text-soft); }
+
+    .leaderboard {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .lb-head {
+      display: grid;
+      grid-template-columns: 48px 1fr 100px;
+      padding: 10px 16px;
+      background: var(--green-deep);
+      color: rgba(255,255,255,0.7);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 500;
+    }
+    .lb-row {
+      display: grid;
+      grid-template-columns: 48px 1fr 100px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      font-size: 14px;
+      align-items: center;
+    }
+    .lb-row.pending { color: var(--text-soft); }
+    .lb-row.done { color: var(--text-dark); }
+    .lb-row.first-place {
+      background: var(--gold-light);
+      color: #7a5a10;
+      font-weight: 500;
+    }
+    .pick-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--green-deep);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .first-place .pick-badge { background: var(--gold); color: #fff; }
+
+    .winner-card {
+      background: var(--green-deep);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      text-align: center;
+      margin-bottom: 1rem;
+      border: 2px solid var(--gold);
+    }
+    .winner-card .trophy { font-size: 28px; margin-bottom: 8px; }
+    .winner-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+    .winner-card p { font-size: 13px; color: rgba(255,255,255,0.65); }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      font-size: 12px;
+      color: var(--text-soft);
+      letter-spacing: 0.04em;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Boys Masters Week</h1>
+  <p>Closest to the pin picks first</p>
+</header>
+
+<div class="container">
+
+  <div id="setup-area">
+    <div class="card">
+      <div class="card-label">Your group</div>
+      <div id="player-list"></div>
+      <button class="btn-add" id="add-player">+ Add player</button>
+    </div>
+    <button class="btn-primary" id="start-btn">Tee it up</button>
+  </div>
+
+  <div id="game-area">
+    <div class="card">
+      <div class="player-turn" id="current-player-name">Player</div>
+      <canvas id="golf-canvas" height="160"></canvas>
+      <div class="dist-display">
+        <span class="dist-big" id="distance-num">—</span>
+        <span class="dist-unit" id="dist-label">yards from the pin</span>
+      </div>
+      <button class="btn-primary" id="shoot-btn">Take your shot</button>
+    </div>
+
+    <div class="leaderboard">
+      <div class="lb-head">
+        <span>Pick</span><span>Player</span><span style="text-align:right">Distance</span>
+      </div>
+      <div id="lb-rows"></div>
+    </div>
+
+    <button class="btn-secondary" id="reset-btn">Start over</button>
+  </div>
+
+</div>
+
+<footer>Augusta National &middot; Boys Masters Week &middot; &copy; 2026</footer>
+
+<script>
+  let players = [], shots = [], currentIdx = 0, gameActive = false;
+  let animFrame = null;
+
+  const playerList = document.getElementById('player-list');
+  const setupArea = document.getElementById('setup-area');
+  const gameArea = document.getElementById('game-area');
+  const currentPlayerName = document.getElementById('current-player-name');
+  const distanceNum = document.getElementById('distance-num');
+  const distLabel = document.getElementById('dist-label');
+  const shootBtn = document.getElementById('shoot-btn');
+  const lbRows = document.getElementById('lb-rows');
+  const canvas = document.getElementById('golf-canvas');
+  const ctx = canvas.getContext('2d');
+
+  function addPlayerRow(name) {
+    const row = document.createElement('div');
+    row.className = 'player-row';
+    row.innerHTML = `<input type="text" placeholder="Player name" value="${name || ''}" /><button class="btn-remove">Remove</button>`;
+    row.querySelector('.btn-remove').onclick = () => { if (playerList.children.length > 2) row.remove(); };
+    playerList.appendChild(row);
+  }
+
+  ['', '', '', ''].forEach(() => addPlayerRow(''));
+  document.getElementById('add-player').onclick = () => addPlayerRow('');
+
+  document.getElementById('start-btn').onclick = () => {
+    const inputs = [...playerList.querySelectorAll('input')];
+    players = inputs.map(i => i.value.trim()).filter(Boolean);
+    if (players.length < 2) { alert('Add at least 2 players!'); return; }
+    shots = players.map(p => ({ name: p, dist: null }));
+    currentIdx = 0;
+    gameActive = true;
+    setupArea.style.display = 'none';
+    gameArea.style.display = 'block';
+    renderGame();
+  };
+
+  document.getElementById('reset-btn').onclick = () => {
+    if (animFrame) cancelAnimationFrame(animFrame);
+    gameArea.style.display = 'none';
+    setupArea.style.display = 'block';
+    gameActive = false;
+    const banner = document.querySelector('.winner-card');
+    if (banner) banner.remove();
+    shootBtn.style.display = '';
+    distLabel.textContent = 'yards from the pin';
+    distanceNum.textContent = '—';
+  };
+
+  function randomDist() {
+    return Math.round(20 + Math.pow(Math.random(), 0.7) * 300);
+  }
+
+  const W = 560, H = 160;
+  canvas.width = W; canvas.height = H;
+
+  const TEE_X = 60, TEE_Y = 118;
+  const PIN_X = 490, GROUND_Y = 128;
+  const MAX_DIST = 320;
+
+  function distToLandX(dist) {
+    const normalized = Math.min(dist / MAX_DIST, 1);
+    const travelRange = PIN_X - TEE_X - 30;
+    return PIN_X - normalized * travelRange;
+  }
+
+  function drawScene(ballX, ballY, phase) {
+    ctx.clearRect(0, 0, W, H);
+
+    ctx.fillStyle = '#7cba60';
+    ctx.fillRect(0, GROUND_Y, W, H - GROUND_Y);
+    ctx.fillStyle = '#5e9e46';
+    ctx.fillRect(PIN_X - 35, GROUND_Y, 90, H - GROUND_Y);
+
+    ctx.strokeStyle = '#6aac52';
+    ctx.lineWidth = 0.5;
+    for (let x = 40; x < W - 40; x += 20) {
+      ctx.beginPath(); ctx.moveTo(x, GROUND_Y); ctx.lineTo(x, H); ctx.stroke();
+    }
+
+    ctx.fillStyle = '#c8e6b4';
+    ctx.beginPath(); ctx.ellipse(PIN_X, GROUND_Y, 22, 5, 0, 0, Math.PI * 2); ctx.fill();
+
+    ctx.strokeStyle = '#444';
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(PIN_X, GROUND_Y); ctx.lineTo(PIN_X, GROUND_Y - 42); ctx.stroke();
+    ctx.fillStyle = '#c9a84c';
+    ctx.beginPath();
+    ctx.moveTo(PIN_X, GROUND_Y - 42);
+    ctx.lineTo(PIN_X + 20, GROUND_Y - 33);
+    ctx.lineTo(PIN_X, GROUND_Y - 24);
+    ctx.closePath(); ctx.fill();
+
+    drawGolfer(TEE_X, TEE_Y, phase);
+
+    if (ballX !== null) {
+      ctx.fillStyle = '#fff';
+      ctx.strokeStyle = '#bbb';
+      ctx.lineWidth = 0.8;
+      ctx.beginPath(); ctx.arc(ballX, ballY, 5.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    }
+
+    ctx.fillStyle = '#3a5a2a';
+    ctx.font = '500 11px DM Sans, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Tee', TEE_X, GROUND_Y + 16);
+    ctx.fillText('Pin', PIN_X, GROUND_Y + 16);
+  }
+
+  function drawGolfer(x, y, phase) {
+    ctx.save();
+    ctx.strokeStyle = '#2c2c2a';
+    ctx.lineWidth = 2.2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    ctx.fillStyle = '#e8b89a';
+    ctx.beginPath(); ctx.arc(x, y - 30, 7, 0, Math.PI * 2); ctx.fill();
+
+    if (phase === 'idle') {
+      ctx.beginPath(); ctx.moveTo(x, y - 23); ctx.lineTo(x, y - 2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x, y - 17); ctx.lineTo(x - 11, y - 9); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x, y - 17); ctx.lineTo(x + 11, y - 9); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x, y - 2); ctx.lineTo(x - 7, y + 14); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x, y - 2); ctx.lineTo(x + 7, y + 14); ctx.stroke();
+      ctx.strokeStyle = '#888'; ctx.lineWidth = 1.8;
+      ctx.beginPath(); ctx.moveTo(x + 11, y - 9); ctx.lineTo(x + 20, y + 2); ctx.stroke();
+    } else if (phase === 'backswing') {
+      ctx.beginPath(); ctx.moveTo(x, y - 23); ctx.lineTo(x, y - 2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x, y - 17); ctx.lineTo(x - 8, y - 25); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x, y - 17); ctx.lineTo(x + 11, y - 9); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x, y - 2); ctx.lineTo(x - 7, y + 14); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x, y - 2); ctx.lineTo(x + 7, y + 14); ctx.stroke();
+      ctx.strokeStyle = '#888'; ctx.lineWidth = 1.8;
+      ctx.beginPath(); ctx.moveTo(x - 8, y - 25); ctx.lineTo(x - 22, y - 34); ctx.stroke();
+    } else if (phase === 'follow') {
+      ctx.beginPath(); ctx.moveTo(x, y - 23); ctx.lineTo(x, y - 2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x, y - 17); ctx.lineTo(x + 13, y - 25); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x, y - 17); ctx.lineTo(x - 9, y - 9); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x, y - 2); ctx.lineTo(x - 7, y + 14); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x, y - 2); ctx.lineTo(x + 7, y + 14); ctx.stroke();
+      ctx.strokeStyle = '#888'; ctx.lineWidth = 1.8;
+      ctx.beginPath(); ctx.moveTo(x + 13, y - 25); ctx.lineTo(x + 26, y - 38); ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  drawScene(null, null, 'idle');
+
+  function animateShot(targetDist, onComplete) {
+    const totalFrames = 80;
+    let frame = 0;
+    const landX = distToLandX(targetDist);
+    const normalized = Math.min(targetDist / MAX_DIST, 1);
+
+    function easeOut(t) { return 1 - Math.pow(1 - t, 2); }
+
+    function step() {
+      frame++;
+      const t = frame / totalFrames;
+
+      let phase = 'idle';
+      if (t < 0.12) phase = 'backswing';
+      else if (t < 0.25) phase = 'follow';
+
+      let ballX = null, ballY = null;
+      if (t >= 0.18) {
+        const bt = easeOut((t - 0.18) / 0.82);
+        ballX = TEE_X + bt * (landX - TEE_X);
+        const arcLift = Math.sin(bt * Math.PI) * -(50 + normalized * 40);
+        ballY = GROUND_Y + arcLift;
+        if (bt >= 1) { ballX = landX; ballY = GROUND_Y; }
+      }
+
+      drawScene(ballX, ballY, phase);
+
+      if (frame < totalFrames) {
+        animFrame = requestAnimationFrame(step);
+      } else {
+        drawScene(landX, GROUND_Y, 'idle');
+        onComplete();
+      }
+    }
+    animFrame = requestAnimationFrame(step);
+  }
+
+  shootBtn.onclick = () => {
+    if (!gameActive) return;
+    shootBtn.disabled = true;
+    const dist = randomDist();
+    shots[currentIdx].dist = dist;
+
+    animateShot(dist, () => {
+      let count = 0;
+      const iv = setInterval(() => {
+        distanceNum.textContent = Math.round(20 + Math.random() * 300);
+        count++;
+        if (count > 10) {
+          clearInterval(iv);
+          distanceNum.textContent = dist;
+          currentIdx++;
+          const allDone = shots.every(s => s.dist !== null);
+          if (allDone) {
+            setTimeout(showFinalLeaderboard, 700);
+          } else {
+            setTimeout(() => { distanceNum.textContent = '—'; renderGame(); }, 900);
+          }
+        }
+      }, 60);
+    });
+
+    renderLeaderboard(false);
+  };
+
+  function renderGame() {
+    currentPlayerName.textContent = shots[currentIdx].name + "'s turn";
+    drawScene(null, null, 'idle');
+    shootBtn.disabled = false;
+    shootBtn.textContent = 'Take your shot';
+    renderLeaderboard(false);
+  }
+
+  function renderLeaderboard(final) {
+    const list = final ? [...shots].sort((a, b) => a.dist - b.dist) : shots;
+    lbRows.innerHTML = list.map((s, i) => {
+      if (!final) {
+        const hasDist = s.dist !== null;
+        const isCur = !hasDist && shots.indexOf(s) === currentIdx;
+        return `<div class="lb-row ${hasDist ? 'done' : 'pending'}">
+          <span style="color:#aaa;font-size:13px">${hasDist ? i + 1 : '—'}</span>
+          <span>${s.name}</span>
+          <span style="text-align:right">${hasDist ? s.dist + ' yds' : (isCur ? '...' : '—')}</span>
+        </div>`;
+      } else {
+        return `<div class="lb-row ${i === 0 ? 'first-place' : 'done'}">
+          <span><span class="pick-badge">${i + 1}</span></span>
+          <span>${s.name}</span>
+          <span style="text-align:right;font-weight:500">${s.dist} yds</span>
+        </div>`;
+      }
+    }).join('');
+  }
+
+  function showFinalLeaderboard() {
+    const sorted = [...shots].sort((a, b) => a.dist - b.dist);
+    const winner = sorted[0];
+    currentPlayerName.textContent = 'All shots complete!';
+    distLabel.textContent = '';
+    distanceNum.textContent = '';
+    shootBtn.style.display = 'none';
+
+    if (!document.querySelector('.winner-card')) {
+      const banner = document.createElement('div');
+      banner.className = 'winner-card';
+      banner.innerHTML = `<div class="trophy">⛳</div><h3>${winner.name} picks first!</h3><p>${winner.dist} yards — closest to the pin</p>`;
+      gameArea.insertBefore(banner, document.querySelector('.leaderboard'));
+    }
+    renderLeaderboard(true);
+  }
+
+  renderLeaderboard(false);
+</script>
+</body>
+</html>
